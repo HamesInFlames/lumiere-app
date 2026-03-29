@@ -57,6 +57,7 @@ export default function AppLayout() {
           name={tab.name}
           options={{
             title: tab.title,
+            headerShown: tab.name !== "channels",
             href: role && tab.roles.includes(role) ? undefined : null,
             tabBarIcon: ({ color, size }) => (
               <Ionicons name={tab.icon} size={size} color={color} />
