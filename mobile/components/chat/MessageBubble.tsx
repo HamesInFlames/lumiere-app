@@ -7,7 +7,7 @@ export interface Message {
   senderName: string;
   type: "text" | "image" | "order_ref";
   content: string;
-  createdAt: string;
+  created_at: string;
   orderId?: string;
 }
 
@@ -16,10 +16,11 @@ interface Props {
   isOwn: boolean;
 }
 
-function formatTime(iso: string): string {
-  const d = new Date(iso);
-  return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+const formatTime = (dateString: string) => {
+  const date = new Date(dateString);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
 
 export default function MessageBubble({ message, isOwn }: Props) {
   return (
@@ -44,7 +45,7 @@ export default function MessageBubble({ message, isOwn }: Props) {
         )}
 
         <Text style={[styles.time, isOwn && styles.timeOwn]}>
-          {formatTime(message.createdAt)}
+          {formatTime(message.created_at)}
         </Text>
       </View>
     </View>

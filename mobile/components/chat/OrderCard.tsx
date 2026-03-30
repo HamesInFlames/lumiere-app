@@ -6,7 +6,7 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 import api from "../../lib/api";
 
 interface Order {
@@ -43,6 +43,7 @@ function formatDate(iso?: string): string {
 }
 
 export default function OrderCard({ orderId }: Props) {
+  const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,7 +54,7 @@ export default function OrderCard({ orderId }: Props) {
       .then(({ data }) => {
         if (!cancelled) setOrder(data);
       })
-      .catch(() => {})
+      .catch((error) => { console.log(error); })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
@@ -85,7 +86,7 @@ export default function OrderCard({ orderId }: Props) {
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.7}
-      onPress={() => router.push(`/orders/${order.id}`)}
+      onPress={() => router.push({ pathname: '/(app)/orders/[id]', params: { id: orderId } })}
     >
       <View style={styles.header}>
         <View
