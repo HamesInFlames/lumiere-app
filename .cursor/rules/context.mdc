@@ -1,0 +1,34 @@
+# Lumiere Pasterie Staff App — Cursor Context
+
+## Project Overview
+Internal operations app replacing WhatsApp for a bakery business.
+
+## Tech Stack
+- Backend: Node + Express + TypeScript, deployed on Railway
+- Database: PostgreSQL on Railway
+- Mobile: React Native + Expo + TypeScript
+- Auth: JWT stored in expo-secure-store
+- Realtime: Socket.io
+- File uploads: Cloudinary
+
+## Live URLs
+- Backend API: https://lumiere-staff-api-production.up.railway.app
+- GitHub: https://github.com/HamesInFlames/lumiere-app
+
+## Project Structure
+- backend/ — Node + Express API (fully built and deployed)
+- mobile/ — React Native + Expo app (in progress)
+
+## Roles
+- owner (Eliran) — full access
+- bar_staff — channels, orders, calendar, bar inventory
+- kitchen_staff (Cat = Lumiere, Jade = Tova) — channels, orders, kitchen inventory, recipes
+
+## Rules
+- Do not modify existing working code unless the prompt specifically asks for it
+- Do not add dependencies without checking package.json first
+- Always use TypeScript with proper types — no 'any' unless absolutely necessary
+- Always use StyleSheet for React Native styles — no inline styles
+- Always use the axios instance from lib/api.ts for API calls
+- Double confirmation before any delete or destructive action in the UI
+- Backend is fully built — do not regenerate backend files unless asked
