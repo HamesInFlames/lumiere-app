@@ -111,13 +111,13 @@ export default function ChannelViewScreen() {
 
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
-      if (item.type === "order_ref" && item.orderId) {
+      if (item.type === "order_ref" && item.order_id) {
         return (
           <View style={styles.orderRow}>
             {item.senderId !== userId && (
               <Text style={styles.orderSender}>{item.senderName}</Text>
             )}
-            <OrderCard orderId={item.orderId} />
+            <OrderCard orderId={item.order_id} />
           </View>
         );
       }
@@ -154,7 +154,7 @@ export default function ChannelViewScreen() {
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
-        keyboardVerticalOffset={90}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         <FlatList
           data={messages}

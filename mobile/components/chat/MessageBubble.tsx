@@ -8,7 +8,7 @@ export interface Message {
   type: "text" | "image" | "order_ref";
   content: string;
   created_at: string;
-  orderId?: string;
+  order_id?: string;
 }
 
 interface Props {

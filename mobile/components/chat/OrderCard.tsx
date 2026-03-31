@@ -13,11 +13,12 @@ interface Order {
   id: string;
   type: "preorder" | "wholesale";
   status: string;
-  customerName?: string;
-  wholesaleCode?: string;
-  pickupDate?: string;
-  pickupTime?: string;
-  dueDate?: string;
+  customer_name?: string;
+  wholesale_code?: string;
+  pickup_date?: string;
+  pickup_time?: string;
+  due_date?: string;
+  due_time_context?: string;
   items: unknown[];
 }
 
@@ -43,18 +44,20 @@ function formatDate(iso?: string): string {
 }
 
 export default function OrderCard({ orderId }: Props) {
+  console.log('OrderCard rendered with orderId:', orderId);
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
+    console.log('Fetching order:', orderId);
     api
       .get(`/api/orders/${orderId}`)
       .then(({ data }) => {
         if (!cancelled) setOrder(data);
       })
-      .catch((error) => { console.log(error); })
+      .catch((error) => { console.log('Order fetch error:', JSON.stringify(error)); })
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
@@ -86,7 +89,7 @@ export default function OrderCard({ orderId }: Props) {
     <TouchableOpacity
       style={styles.card}
       activeOpacity={0.7}
-      onPress={() => router.push({ pathname: '/(app)/orders/[id]', params: { id: orderId } })}
+      onPress={() => router.push(`/orders/${order.id}`)}
     >
       <View style={styles.header}>
         <View
@@ -112,14 +115,14 @@ export default function OrderCard({ orderId }: Props) {
       </View>
 
       <Text style={styles.name} numberOfLines={1}>
-        {isPreorder ? order.customerName : order.wholesaleCode}
+        {isPreorder ? order.customer_name : order.wholesale_code}
       </Text>
 
       <View style={styles.meta}>
         <Text style={styles.metaText}>
           {isPreorder
-            ? `Pickup: ${formatDate(order.pickupDate)}${order.pickupTime ? ` ${order.pickupTime}` : ""}`
-            : `Due: ${formatDate(order.dueDate)}`}
+            ? `Pickup: ${formatDate(order.pickup_date)}${order.pickup_time ? ` ${order.pickup_time}` : ""}`
+            : `Due: ${formatDate(order.due_date)}`}
         </Text>
         <Text style={styles.metaText}>
           {order.items.length} item{order.items.length !== 1 ? "s" : ""}
