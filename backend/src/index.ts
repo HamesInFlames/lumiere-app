@@ -11,6 +11,7 @@ import channelRoutes from "./routes/channels";
 import productRoutes from "./routes/products";
 import orderRoutes from "./routes/orders";
 import recipeRoutes from "./routes/recipes";
+import inventoryRoutes from "./routes/inventory";
 import { initSocketHandlers } from "./socket/handlers";
 import { startNoShowChecker } from "./jobs/noShowChecker";
 
@@ -31,6 +32,7 @@ app.use("/api/channels", channelRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/recipes", recipeRoutes);
+app.use("/api/inventory", inventoryRoutes);
 
 app.get("/health", async (_req, res) => {
   try {
