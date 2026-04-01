@@ -26,13 +26,21 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: async (email, password) => {
     const { data } = await api.post("/api/auth/login", { email, password });
-    await SecureStore.setItemAsync("auth_token", data.token);
+    try {
+      await SecureStore.setItemAsync("auth_token", data.token);
+    } catch {
+      // SecureStore may not be available (e.g. web)
+    }
     set({ token: data.token, user: data.user });
   },
 
   logout: async () => {
     await clearPushToken();
-    await SecureStore.deleteItemAsync("auth_token");
+    try {
+      await SecureStore.deleteItemAsync("auth_token");
+    } catch {
+      // SecureStore may not be available (e.g. web)
+    }
     set({ user: null, token: null });
   },
 
@@ -47,7 +55,11 @@ export const useAuthStore = create<AuthState>((set) => ({
       const { data } = await api.get("/api/auth/me");
       set({ user: data, isLoading: false });
     } catch {
-      await SecureStore.deleteItemAsync("auth_token");
+      try {
+        await SecureStore.deleteItemAsync("auth_token");
+      } catch {
+        // SecureStore may not be available (e.g. web)
+      }
       set({ user: null, token: null, isLoading: false });
     }
   },
