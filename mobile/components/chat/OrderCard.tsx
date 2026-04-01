@@ -27,12 +27,13 @@ interface Props {
 }
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "#E53935",
-  confirmed: "#E53935",
-  in_preparation: "#E53935",
-  prepared: "#E53935",
+  new: "#FF7043",
+  confirmed: "#1976D2",
+  in_preparation: "#7B1FA2",
+  prepared: "#2E7D32",
   picked_up: "#43A047",
-  no_show: "#F9A825",
+  no_show: "#F57C00",
+  cancelled: "#9E9E9E",
 };
 
 function formatDate(iso?: string): string {
@@ -44,20 +45,18 @@ function formatDate(iso?: string): string {
 }
 
 export default function OrderCard({ orderId }: Props) {
-  console.log('OrderCard rendered with orderId:', orderId);
   const router = useRouter();
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let cancelled = false;
-    console.log('Fetching order:', orderId);
     api
       .get(`/api/orders/${orderId}`)
       .then(({ data }) => {
         if (!cancelled) setOrder(data);
       })
-      .catch((error) => { console.log('Order fetch error:', JSON.stringify(error)); })
+      .catch(() => {})
       .finally(() => {
         if (!cancelled) setLoading(false);
       });
