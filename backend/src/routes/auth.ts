@@ -67,4 +67,38 @@ router.get("/me", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+// PUT /push-token — register Expo push token for the authenticated user
+router.put("/push-token", verifyToken, async (req: Request, res: Response) => {
+  const { push_token } = req.body;
+
+  if (!push_token || typeof push_token !== "string") {
+    res.status(400).json({ error: "push_token is required" });
+    return;
+  }
+
+  try {
+    await pool.query("UPDATE users SET push_token = $1 WHERE id = $2", [
+      push_token,
+      req.user!.id,
+    ]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Push token update error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// DELETE /push-token — clear push token on logout
+router.delete("/push-token", verifyToken, async (req: Request, res: Response) => {
+  try {
+    await pool.query("UPDATE users SET push_token = NULL WHERE id = $1", [
+      req.user!.id,
+    ]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Push token clear error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 export default router;

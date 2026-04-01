@@ -4,6 +4,7 @@ import { verifyToken } from "../middleware/auth";
 import { requireRole } from "../middleware/requireRole";
 import { upload } from "../middleware/upload";
 import { uploadImage } from "../services/cloudinary";
+import { notifyByRole } from "../services/notifications";
 
 const router = Router();
 
@@ -105,6 +106,15 @@ router.post(
 
       await client.query("COMMIT");
 
+      // Push notification for new preorder
+      notifyByRole(
+        ["owner", "bar_staff", "kitchen_staff"],
+        "New Pre-order",
+        `${customer_name} — pickup ${pickup_date}`,
+        { type: "order", order_id: order.id },
+        req.user!.id
+      ).catch(() => {});
+
       res.status(201).json({ ...order, items: orderItems });
     } catch (err) {
       await client.query("ROLLBACK");
@@ -196,6 +206,15 @@ router.post(
       }
 
       await client.query("COMMIT");
+
+      // Push notification for new wholesale order
+      notifyByRole(
+        ["owner", "kitchen_staff"],
+        "New Wholesale Order",
+        `${wholesale_code} — due ${due_date}`,
+        { type: "order", order_id: order.id },
+        req.user!.id
+      ).catch(() => {});
 
       res.status(201).json({ ...order, items: orderItems });
     } catch (err) {
@@ -582,7 +601,33 @@ router.patch("/:id/status", async (req: Request, res: Response) => {
       return;
     }
 
-    res.json(rows[0]);
+    const order = rows[0];
+    const STATUS_LABELS: Record<string, string> = {
+      confirmed: "Confirmed",
+      in_preparation: "In Preparation",
+      prepared: "Ready",
+      picked_up: "Picked Up",
+      no_show: "No Show",
+      cancelled: "Cancelled",
+    };
+
+    const label = order.customer_name || order.wholesale_code || `Order #${id}`;
+    const statusLabel = STATUS_LABELS[status] ?? status;
+
+    // Notify relevant roles about status change
+    const notifyRoles =
+      isKitchenStatus
+        ? ["owner", "bar_staff"]
+        : ["owner", "kitchen_staff"];
+    notifyByRole(
+      notifyRoles,
+      `Order ${statusLabel}`,
+      `${label} is now ${statusLabel.toLowerCase()}`,
+      { type: "order", order_id: order.id },
+      user.id
+    ).catch(() => {});
+
+    res.json(order);
   } catch (err) {
     console.error("Update order status error:", err);
     res.status(500).json({ error: "Internal server error" });

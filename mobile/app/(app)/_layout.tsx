@@ -42,6 +42,13 @@ const TABS: TabConfig[] = [
     activeIcon: "cube",
     roles: ["owner", "bar_staff", "kitchen_staff"],
   },
+  {
+    name: "recipes",
+    title: "Recipes",
+    icon: "book-outline",
+    activeIcon: "book",
+    roles: ["owner", "bar_staff", "kitchen_staff"],
+  },
 ];
 
 export default function AppLayout() {

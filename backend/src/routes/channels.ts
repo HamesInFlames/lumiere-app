@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import pool from "../db";
 import { verifyToken } from "../middleware/auth";
+import { notifyByRole } from "../services/notifications";
 
 const router = Router();
 
@@ -109,6 +110,27 @@ router.post("/:id/messages", async (req: Request, res: Response) => {
     const io = req.app.get("io");
     if (io) {
       io.to(id).emit("new_message", message);
+    }
+
+    // Push notification for chat messages (text only, not system messages)
+    if (type === "text" && content) {
+      const { rows: channelRows } = await pool.query(
+        "SELECT label FROM channels WHERE id = $1",
+        [id]
+      );
+      const channelLabel = channelRows[0]?.label ?? "Chat";
+      const { rows: roleRows } = await pool.query(
+        "SELECT role FROM channel_roles WHERE channel_id = $1",
+        [id]
+      );
+      const channelRoles = roleRows.map((r) => r.role as string);
+      notifyByRole(
+        channelRoles,
+        `${req.user!.name} in ${channelLabel}`,
+        content.length > 100 ? content.slice(0, 100) + "…" : content,
+        { type: "chat", channel_id: id },
+        req.user!.id
+      ).catch(() => {});
     }
 
     res.status(201).json(message);

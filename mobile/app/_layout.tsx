@@ -2,15 +2,29 @@ import { useEffect } from "react";
 import { Slot, useRouter, useSegments } from "expo-router";
 import { View, ActivityIndicator, StyleSheet } from "react-native";
 import { useAuthStore } from "../store/authStore";
+import {
+  registerForPushNotifications,
+  useNotificationListeners,
+} from "../lib/notifications";
 
 export default function RootLayout() {
   const { user, isLoading, loadUser } = useAuthStore();
   const segments = useSegments();
   const router = useRouter();
 
+  // Set up notification tap handlers
+  useNotificationListeners();
+
   useEffect(() => {
     loadUser();
   }, []);
+
+  // Register for push notifications when user is authenticated
+  useEffect(() => {
+    if (user) {
+      registerForPushNotifications().catch(() => {});
+    }
+  }, [user]);
 
   useEffect(() => {
     if (isLoading) return;

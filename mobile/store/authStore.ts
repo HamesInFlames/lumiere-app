@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import * as SecureStore from "expo-secure-store";
 import api from "../lib/api";
+import { clearPushToken } from "../lib/notifications";
 
 interface User {
   id: string;
@@ -30,6 +31,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   logout: async () => {
+    await clearPushToken();
     await SecureStore.deleteItemAsync("auth_token");
     set({ user: null, token: null });
   },

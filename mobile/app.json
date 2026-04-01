@@ -39,6 +39,13 @@
         {
           "photosPermission": "Allow Lumiere Staff to access your photos to attach order photos."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#8B6914"
+        }
       ]
     ]
   }

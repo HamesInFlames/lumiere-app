@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth";
 import channelRoutes from "./routes/channels";
 import productRoutes from "./routes/products";
 import orderRoutes from "./routes/orders";
+import recipeRoutes from "./routes/recipes";
 import { initSocketHandlers } from "./socket/handlers";
 import { startNoShowChecker } from "./jobs/noShowChecker";
 
@@ -29,6 +30,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/channels", channelRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/recipes", recipeRoutes);
 
 app.get("/health", async (_req, res) => {
   try {
