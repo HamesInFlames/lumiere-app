@@ -1,6 +1,6 @@
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { Platform } from "react-native";
+import { Platform, TouchableOpacity } from "react-native";
 import { useAuthStore } from "../../store/authStore";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -51,6 +51,19 @@ const TABS: TabConfig[] = [
   },
 ];
 
+function SettingsButton() {
+  const router = useRouter();
+  return (
+    <TouchableOpacity
+      onPress={() => router.push("/settings")}
+      hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+      style={{ paddingRight: 4 }}
+    >
+      <Ionicons name="person-circle-outline" size={26} color="#8B6914" />
+    </TouchableOpacity>
+  );
+}
+
 export default function AppLayout() {
   const role = useAuthStore((s) => s.user?.role);
 
@@ -69,6 +82,7 @@ export default function AppLayout() {
           fontWeight: "700",
           color: "#1a1a1a",
         },
+        headerRight: () => <SettingsButton />,
         headerTintColor: "#8B6914",
         tabBarActiveTintColor: "#8B6914",
         tabBarInactiveTintColor: "#bbb",
@@ -107,6 +121,17 @@ export default function AppLayout() {
           }}
         />
       ))}
+      <Tabs.Screen
+        name="settings"
+        options={{
+          title: "Settings",
+          href: null,
+          headerRight: undefined,
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="settings-outline" size={size} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }
