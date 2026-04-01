@@ -37,6 +37,7 @@ interface OrderDetail {
   type: "preorder" | "wholesale";
   status: string;
   created_by?: string;
+  creator_name?: string;
   created_at?: string;
   customer_name?: string;
   wholesale_code?: string;
@@ -51,6 +52,7 @@ interface OrderDetail {
   attachments?: OrderAttachment[];
   edited?: boolean;
   last_edited_by?: string;
+  last_edited_by_name?: string;
   last_edited_at?: string;
 }
 
@@ -471,8 +473,8 @@ export default function OrderDetailScreen() {
           )}
           {order.notes ? <Field label="Notes" value={order.notes} /> : null}
           <Field label="Created" value={formatDateTime(order.created_at)} />
-          {order.created_by ? (
-            <Field label="Created By" value={order.created_by} />
+          {order.creator_name ? (
+            <Field label="Created By" value={order.creator_name} />
           ) : null}
         </View>
 
@@ -562,7 +564,7 @@ export default function OrderDetailScreen() {
           <View style={styles.editedBanner}>
             <Ionicons name="pencil" size={13} color="#F57F17" />
             <Text style={styles.editedText}>
-              Edited by {order.last_edited_by ?? "unknown"} ·{" "}
+              Edited by {order.last_edited_by_name ?? "unknown"} ·{" "}
               {formatDateTime(order.last_edited_at)}
             </Text>
           </View>

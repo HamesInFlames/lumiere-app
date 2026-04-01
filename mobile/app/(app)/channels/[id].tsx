@@ -7,6 +7,7 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  TouchableOpacity,
 } from "react-native";
 import { useLocalSearchParams, Stack } from "expo-router";
 import api from "../../../lib/api";
@@ -143,6 +144,21 @@ export default function ChannelViewScreen() {
         <Stack.Screen options={{ title: label ?? "Chat" }} />
         <View style={styles.center}>
           <Text style={styles.errorText}>{error}</Text>
+          <TouchableOpacity
+            style={styles.retryBtn}
+            onPress={() => {
+              setError(null);
+              setLoading(true);
+              fetchMessages()
+                .then((data) => setMessages(data))
+                .catch((err: any) =>
+                  setError(err.response?.data?.message ?? "Failed to load messages")
+                )
+                .finally(() => setLoading(false));
+            }}
+          >
+            <Text style={styles.retryText}>Retry</Text>
+          </TouchableOpacity>
         </View>
       </>
     );
@@ -230,5 +246,16 @@ const styles = StyleSheet.create({
     color: "#E53935",
     textAlign: "center",
     padding: 24,
+  },
+  retryBtn: {
+    backgroundColor: "#8B6914",
+    paddingHorizontal: 20,
+    paddingVertical: 9,
+    borderRadius: 8,
+  },
+  retryText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
   },
 });

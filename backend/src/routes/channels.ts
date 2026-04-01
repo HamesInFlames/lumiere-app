@@ -72,7 +72,21 @@ router.get("/:id/messages", async (req: Request, res: Response) => {
     }
 
     const { rows } = await pool.query(query, params);
-    res.json(rows);
+
+    // Transform to match mobile Message interface
+    const messages = rows.map((row) => ({
+      id: row.id,
+      channelId: id,
+      senderId: String(row.user.id),
+      senderName: row.user.name,
+      type: row.type,
+      content: row.content,
+      image_url: row.image_url,
+      order_id: row.order_id,
+      created_at: row.created_at,
+    }));
+
+    res.json(messages);
   } catch (err) {
     console.error("Get messages error:", err);
     res.status(500).json({ error: "Internal server error" });
@@ -102,9 +116,17 @@ router.post("/:id/messages", async (req: Request, res: Response) => {
       [id, req.user!.id, type, content || null, image_url || null, order_id || null]
     );
 
+    // Transform to match mobile Message interface
     const message = {
-      ...rows[0],
-      user: { id: req.user!.id, name: req.user!.name, role: req.user!.role },
+      id: rows[0].id,
+      channelId: id,
+      senderId: String(req.user!.id),
+      senderName: req.user!.name,
+      type: rows[0].type,
+      content: rows[0].content,
+      image_url: rows[0].image_url,
+      order_id: rows[0].order_id,
+      created_at: rows[0].created_at,
     };
 
     const io = req.app.get("io");

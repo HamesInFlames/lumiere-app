@@ -365,14 +365,19 @@ router.get("/:id", async (req: Request, res: Response) => {
     );
 
     const { rows: attachments } = await pool.query(
-      "SELECT * FROM order_attachments WHERE order_id = $1",
+      `SELECT a.id, a.image_url, u.name AS uploaded_by, a.note, a.created_at
+       FROM order_attachments a
+       LEFT JOIN users u ON u.id = a.uploaded_by
+       WHERE a.order_id = $1
+       ORDER BY a.created_at DESC`,
       [id]
     );
 
     res.json({
       ...order,
-      created_by_user: order.created_by_user,
-      last_edited_by_user: lastEditedByUser,
+      created_by: String(order.created_by),
+      creator_name: order.created_by_user?.name ?? null,
+      last_edited_by_name: lastEditedByUser?.name ?? null,
       items,
       attachments,
     });
