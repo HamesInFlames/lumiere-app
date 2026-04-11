@@ -1,34 +1,65 @@
 # Lumiere Pasterie Staff App — Cursor Context
 
+## IMPORTANT: Read CONTEXT.md First
+Always read `CONTEXT.md` in the repo root before making any changes. It is the single source of truth for:
+- Full database schema (12 tables, every column and type)
+- All 25+ API endpoints (method, path, roles, request/response shapes)
+- Role permissions matrix (owner, bar_staff, kitchen_staff)
+- Auth flow, Socket.IO events, file structure
+- Known bugs and QA checklist
+
+If CONTEXT.md conflicts with this file, CONTEXT.md wins.
+
 ## Project Overview
-Internal operations app replacing WhatsApp for a bakery business.
+Internal operations app replacing WhatsApp for a bakery business (Lumiere Patisserie).
 
 ## Tech Stack
 - Backend: Node + Express + TypeScript, deployed on Railway
-- Database: PostgreSQL on Railway
-- Mobile: React Native + Expo + TypeScript
-- Auth: JWT stored in expo-secure-store
-- Realtime: Socket.io
+- Database: PostgreSQL 18.3 on Railway
+- Mobile: React Native 0.81 + Expo SDK 54 + expo-router v6 + TypeScript
+- State: Zustand
+- Auth: JWT (30-day expiry) stored in expo-secure-store
+- Realtime: Socket.IO
 - File uploads: Cloudinary
+- Push: expo-server-sdk (backend) + expo-notifications (mobile)
 
 ## Live URLs
 - Backend API: https://lumiere-staff-api-production.up.railway.app
 - GitHub: https://github.com/HamesInFlames/lumiere-app
 
 ## Project Structure
-- backend/ — Node + Express API (fully built and deployed)
-- mobile/ — React Native + Expo app (in progress)
+- `backend/` — Node + Express API (fully built and deployed)
+- `mobile/` — React Native + Expo app
+- `CONTEXT.md` — Full developer reference (DB schema, API docs, etc.)
 
 ## Roles
-- owner (Eliran) — full access
+- owner (Eliran) — full access to everything
 - bar_staff — channels, orders, calendar, bar inventory
-- kitchen_staff (Cat = Lumiere, Jade = Tova) — channels, orders, kitchen inventory, recipes
+- kitchen_staff (Cat = Lumiere, Jade = Tova) — channels, orders (view + kitchen status only), kitchen inventory, recipes
+
+## Coordination with Claude Code
+Claude Code also works on this repo and pushes to main. To avoid conflicts:
+- Always `git pull origin main` before starting work
+- Check git log for recent Claude Code commits before editing files
+- If Claude Code owns a file (recent commits), work in a NEW branch and create a PR
+- Never force-push to main
 
 ## Rules
 - Do not modify existing working code unless the prompt specifically asks for it
 - Do not add dependencies without checking package.json first
 - Always use TypeScript with proper types — no 'any' unless absolutely necessary
 - Always use StyleSheet for React Native styles — no inline styles
-- Always use the axios instance from lib/api.ts for API calls
+- Always use the axios instance from `mobile/lib/api.ts` for API calls
 - Double confirmation before any delete or destructive action in the UI
-- Backend is fully built — do not regenerate backend files unless asked
+- Backend field names are snake_case everywhere — match them exactly
+- users.id is INTEGER (SERIAL), all other IDs are UUID
+- Always check CONTEXT.md for the exact API endpoint shape before calling it
+- When fixing bugs, create a branch and PR — do not push directly to main
+
+## Conventions
+- Gold primary color: #8B6914
+- Dark text: #1A1A1A
+- Cream background: #FFFDF5
+- Status colors: new=#FF7043, confirmed=#1976D2, in_preparation=#7B1FA2, prepared=#2E7D32, picked_up=#4CAF50, no_show=#E53935, cancelled=#9E9E9E
+- Tab bar: Channels | Orders | Calendar | Inventory | Recipes (Calendar hidden for kitchen_staff)
+- Settings accessed via header button, not tab
