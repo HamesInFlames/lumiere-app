@@ -94,8 +94,15 @@ router.post(
         );
 
         const message = {
-          ...msgRows[0],
-          user: { id: req.user!.id, name: req.user!.name, role: req.user!.role },
+          id: msgRows[0].id,
+          channelId,
+          senderId: String(req.user!.id),
+          senderName: req.user!.name,
+          type: msgRows[0].type,
+          content: msgRows[0].content,
+          image_url: msgRows[0].image_url,
+          order_id: msgRows[0].order_id,
+          created_at: msgRows[0].created_at,
         };
 
         const io = req.app.get("io");
@@ -195,8 +202,15 @@ router.post(
         );
 
         const message = {
-          ...msgRows[0],
-          user: { id: req.user!.id, name: req.user!.name, role: req.user!.role },
+          id: msgRows[0].id,
+          channelId,
+          senderId: String(req.user!.id),
+          senderName: req.user!.name,
+          type: msgRows[0].type,
+          content: msgRows[0].content,
+          image_url: msgRows[0].image_url,
+          order_id: msgRows[0].order_id,
+          created_at: msgRows[0].created_at,
         };
 
         const io = req.app.get("io");

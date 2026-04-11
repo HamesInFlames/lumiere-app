@@ -15,12 +15,6 @@ import { Ionicons } from "@expo/vector-icons";
 import api from "../../../lib/api";
 import { useAuthStore } from "../../../store/authStore";
 
-interface OrderItem {
-  id: string;
-  quantity: number;
-  product_name?: string;
-}
-
 interface Order {
   id: string;
   type: "preorder" | "wholesale";
@@ -31,7 +25,7 @@ interface Order {
   pickup_time?: string;
   due_date?: string;
   due_time_context?: string;
-  items: OrderItem[];
+  item_count: number;
 }
 
 const STATUS_COLORS: Record<string, string> = {
@@ -61,6 +55,15 @@ function formatDate(iso?: string): string {
   return d.toLocaleDateString([], { month: "short", day: "numeric" });
 }
 
+function formatTime(time?: string): string {
+  if (!time) return "";
+  const [h, m] = time.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return time;
+  const suffix = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
 function StatusBadge({ status }: { status: string }) {
   const color = STATUS_COLORS[status] ?? "#9E9E9E";
   const label = STATUS_LABELS[status] ?? status.replace(/_/g, " ").toUpperCase();
@@ -77,9 +80,9 @@ function OrderRow({ order, onPress }: { order: Order; onPress: () => void }) {
   const date = isPreorder
     ? formatDate(order.pickup_date)
     : formatDate(order.due_date);
-  const time = isPreorder ? order.pickup_time : order.due_time_context;
+  const time = isPreorder ? formatTime(order.pickup_time) : order.due_time_context;
   const dateLabel = isPreorder ? "Pickup" : "Due";
-  const count = order.items?.length ?? 0;
+  const count = order.item_count ?? 0;
   const accentColor = isPreorder ? "#5E35B1" : "#1565C0";
 
   return (

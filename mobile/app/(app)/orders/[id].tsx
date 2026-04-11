@@ -99,6 +99,15 @@ function formatDateTime(iso?: string): string {
   });
 }
 
+function formatTime(time?: string): string {
+  if (!time) return "—";
+  const [h, m] = time.split(":").map(Number);
+  if (isNaN(h) || isNaN(m)) return time;
+  const suffix = h >= 12 ? "PM" : "AM";
+  const hour = h % 12 || 12;
+  return `${hour}:${String(m).padStart(2, "0")} ${suffix}`;
+}
+
 interface ActionConfig {
   label: string;
   status: string;
@@ -454,7 +463,7 @@ export default function OrderDetailScreen() {
               <Field label="Customer" value={order.customer_name} />
               <Field label="Phone" value={order.phone_number} />
               <Field label="Pickup Date" value={formatDate(order.pickup_date)} />
-              <Field label="Pickup Time" value={order.pickup_time} />
+              <Field label="Pickup Time" value={formatTime(order.pickup_time)} />
               <Field
                 label="Payment"
                 value={
