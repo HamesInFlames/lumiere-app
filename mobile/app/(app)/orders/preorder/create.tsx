@@ -223,6 +223,7 @@ export default function CreatePreorderScreen() {
         notes: notes.trim() || undefined,
         items: items.map((item) => ({
           product_id: item.product_id,
+          product_name: item.product_name,
           quantity: parseInt(item.quantity, 10),
           notes: item.notes.trim() || undefined,
         })),
