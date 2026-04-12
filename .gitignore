@@ -2,3 +2,10 @@ node_modules/
 dist/
 .env
 .expo/
+
+# Test artifacts
+test-screenshots/
+*.png
+ui.xml
+metro-output.txt
+package-lock.json
