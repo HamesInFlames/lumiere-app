@@ -1,6 +1,7 @@
 import { Tabs, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { Platform, TouchableOpacity } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuthStore } from "../../store/authStore";
 
 type IconName = React.ComponentProps<typeof Ionicons>["name"];
@@ -66,6 +67,8 @@ function SettingsButton() {
 
 export default function AppLayout() {
   const role = useAuthStore((s) => s.user?.role);
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, Platform.OS === "ios" ? 24 : 8);
 
   return (
     <Tabs
@@ -90,9 +93,9 @@ export default function AppLayout() {
           backgroundColor: "#fff",
           borderTopColor: "#f0f0f0",
           borderTopWidth: 1,
-          height: Platform.OS === "ios" ? 84 : 62,
+          height: 54 + bottomPadding,
           paddingTop: 6,
-          paddingBottom: Platform.OS === "ios" ? 24 : 8,
+          paddingBottom: bottomPadding,
           elevation: 0,
           shadowOpacity: 0,
         },
