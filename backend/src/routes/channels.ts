@@ -1,6 +1,8 @@
 import { Router, Request, Response } from "express";
 import pool from "../db";
 import { verifyToken } from "../middleware/auth";
+import { upload } from "../middleware/upload";
+import { uploadImage } from "../services/cloudinary";
 import { notifyByRole } from "../services/notifications";
 
 const router = Router();
@@ -92,6 +94,76 @@ router.get("/:id/messages", async (req: Request, res: Response) => {
     res.status(500).json({ error: "Internal server error" });
   }
 });
+
+router.post(
+  "/:id/messages/image",
+  upload.single("image"),
+  async (req: Request, res: Response) => {
+    const id = req.params.id as string;
+
+    try {
+      if (!(await userHasChannelAccess(req.user!.role, id))) {
+        res.status(403).json({ error: "No access to this channel" });
+        return;
+      }
+
+      if (!req.file) {
+        res.status(400).json({ error: "No image file provided" });
+        return;
+      }
+
+      const imageUrl = await uploadImage(req.file.buffer, "lumiere/chat");
+
+      const { rows } = await pool.query(
+        `INSERT INTO messages (channel_id, user_id, type, content, image_url)
+         VALUES ($1, $2, 'image', $3, $4)
+         RETURNING id, channel_id, user_id, type, content, image_url, order_id, created_at`,
+        [id, req.user!.id, imageUrl, imageUrl]
+      );
+
+      const message = {
+        id: rows[0].id,
+        channelId: id,
+        senderId: String(req.user!.id),
+        senderName: req.user!.name,
+        type: rows[0].type,
+        content: rows[0].content,
+        image_url: rows[0].image_url,
+        order_id: rows[0].order_id,
+        created_at: rows[0].created_at,
+      };
+
+      const io = req.app.get("io");
+      if (io) {
+        io.to(id).emit("new_message", message);
+      }
+
+      // Push notification for image messages
+      const { rows: channelRows } = await pool.query(
+        "SELECT label FROM channels WHERE id = $1",
+        [id]
+      );
+      const channelLabel = channelRows[0]?.label ?? "Chat";
+      const { rows: roleRows } = await pool.query(
+        "SELECT role FROM channel_roles WHERE channel_id = $1",
+        [id]
+      );
+      const channelRoles = roleRows.map((r) => r.role as string);
+      notifyByRole(
+        channelRoles,
+        `${req.user!.name} in ${channelLabel}`,
+        "Sent an image",
+        { type: "chat", channel_id: id },
+        req.user!.id
+      ).catch(() => {});
+
+      res.status(201).json(message);
+    } catch (err) {
+      console.error("Post image message error:", err);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  }
+);
 
 router.post("/:id/messages", async (req: Request, res: Response) => {
   const id = req.params.id as string;

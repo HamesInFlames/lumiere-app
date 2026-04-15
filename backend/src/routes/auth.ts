@@ -67,6 +67,49 @@ router.get("/me", verifyToken, async (req: Request, res: Response) => {
   }
 });
 
+// PUT /change-password — change password for the authenticated user
+router.put("/change-password", verifyToken, async (req: Request, res: Response) => {
+  const { current_password, new_password } = req.body;
+
+  if (!current_password || !new_password) {
+    res.status(400).json({ error: "Current password and new password are required" });
+    return;
+  }
+
+  if (new_password.length < 6) {
+    res.status(400).json({ error: "New password must be at least 6 characters" });
+    return;
+  }
+
+  try {
+    const { rows } = await pool.query(
+      "SELECT password FROM users WHERE id = $1",
+      [req.user!.id]
+    );
+
+    if (rows.length === 0) {
+      res.status(404).json({ error: "User not found" });
+      return;
+    }
+
+    if (!bcrypt.compareSync(current_password, rows[0].password)) {
+      res.status(401).json({ error: "Current password is incorrect" });
+      return;
+    }
+
+    const hashedPassword = bcrypt.hashSync(new_password, 10);
+    await pool.query("UPDATE users SET password = $1 WHERE id = $2", [
+      hashedPassword,
+      req.user!.id,
+    ]);
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Change password error:", err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 // PUT /push-token — register Expo push token for the authenticated user
 router.put("/push-token", verifyToken, async (req: Request, res: Response) => {
   const { push_token } = req.body;

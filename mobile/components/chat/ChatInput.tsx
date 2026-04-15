@@ -5,14 +5,17 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import * as ImagePicker from "expo-image-picker";
 
 interface Props {
   onSend: (text: string) => Promise<void>;
+  onSendImage: (uri: string) => Promise<void>;
 }
 
-export default function ChatInput({ onSend }: Props) {
+export default function ChatInput({ onSend, onSendImage }: Props) {
   const [text, setText] = useState("");
   const [sending, setSending] = useState(false);
 
@@ -28,8 +31,59 @@ export default function ChatInput({ onSend }: Props) {
     }
   };
 
+  const handlePickImage = () => {
+    if (sending) return;
+    Alert.alert("Send Image", undefined, [
+      {
+        text: "Take Photo",
+        onPress: async () => {
+          setSending(true);
+          try {
+            const result = await ImagePicker.launchCameraAsync({
+              mediaTypes: "images",
+              quality: 0.7,
+              allowsEditing: true,
+            });
+            if (!result.canceled) {
+              await onSendImage(result.assets[0].uri);
+            }
+          } finally {
+            setSending(false);
+          }
+        },
+      },
+      {
+        text: "Choose from Library",
+        onPress: async () => {
+          setSending(true);
+          try {
+            const result = await ImagePicker.launchImageLibraryAsync({
+              mediaTypes: "images",
+              quality: 0.7,
+              allowsEditing: true,
+            });
+            if (!result.canceled) {
+              await onSendImage(result.assets[0].uri);
+            }
+          } finally {
+            setSending(false);
+          }
+        },
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
+  };
+
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.imageBtn}
+        onPress={handlePickImage}
+        disabled={sending}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="image-outline" size={24} color="#8B6914" />
+      </TouchableOpacity>
       <TextInput
         style={styles.input}
         placeholder="Type a message..."
@@ -88,5 +142,11 @@ const styles = StyleSheet.create({
   },
   sendBtnDisabled: {
     opacity: 0.5,
+  },
+  imageBtn: {
+    justifyContent: "center",
+    alignItems: "center",
+    paddingRight: 8,
+    height: 40,
   },
 });

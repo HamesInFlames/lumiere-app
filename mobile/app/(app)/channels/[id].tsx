@@ -110,6 +110,24 @@ export default function ChannelViewScreen() {
     [id]
   );
 
+  const handleSendImage = useCallback(
+    async (uri: string) => {
+      const formData = new FormData();
+      const filename = uri.split("/").pop() || "photo.jpg";
+      const match = /\.(\w+)$/.exec(filename);
+      const mimeType = match ? `image/${match[1]}` : "image/jpeg";
+      formData.append("image", {
+        uri,
+        name: filename,
+        type: mimeType,
+      } as any);
+      await api.post(`/api/channels/${id}/messages/image`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+    },
+    [id]
+  );
+
   const renderMessage = useCallback(
     ({ item }: { item: Message }) => {
       if (item.type === "order_ref" && item.order_id) {
@@ -197,7 +215,7 @@ export default function ChannelViewScreen() {
             </View>
           }
         />
-        <ChatInput onSend={handleSend} />
+        <ChatInput onSend={handleSend} onSendImage={handleSendImage} />
       </KeyboardAvoidingView>
     </>
   );
