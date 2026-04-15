@@ -24,7 +24,10 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.lumiere.staff",
-      "softwareKeyboardLayoutMode": "pan"
+      "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -47,6 +50,13 @@
           "color": "#8B6914"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "d3dbabf7-2a36-462a-a2ac-a4fcb9c72eb6"
+      }
+    },
+    "owner": "jkaimmes"
   }
 }

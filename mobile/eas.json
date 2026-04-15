@@ -11,6 +11,16 @@
         "buildType": "apk"
       },
       "ios": {
+        "resourceClass": "m-medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://lumiere-staff-api-production.up.railway.app"
+      }
+    },
+    "development-simulator": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
         "simulator": true
       },
       "env": {
@@ -34,15 +44,6 @@
     }
   },
   "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "./google-services.json",
-        "track": "internal"
-      },
-      "ios": {
-        "appleId": "",
-        "ascAppId": ""
-      }
-    }
+    "production": {}
   }
 }
