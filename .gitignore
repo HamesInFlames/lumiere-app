@@ -6,6 +6,7 @@ dist/
 # Test artifacts
 test-screenshots/
 *.png
+!mobile/assets/*.png
 ui.xml
 metro-output.txt
 package-lock.json
