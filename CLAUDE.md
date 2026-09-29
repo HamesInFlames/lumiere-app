@@ -3,7 +3,7 @@
 # Claude Code — Lumière Staff App
 
 ## Role
-Architect and reviewer for the internal staff app of Lumière Pâtisserie (two kitchens: Lumière and Tova). Staff-facing, not customer-facing.
+Lead developer (plan, implement, review) for the internal staff app of Lumière Pâtisserie (two kitchens: Lumière and Tova). Staff-facing, not customer-facing.
 Owner/client: Eliran. Original build spec: `lumiere-prebuild-v2.md`. Endpoint reference: `CONTEXT.md`.
 
 ## Session workflow
